@@ -15,6 +15,7 @@
 		9A1C4D71227CEFE2006A5CA7 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 9A1C4D6F227CEFE2006A5CA7 /* LaunchScreen.storyboard */; };
 		9A1C4D7C227CEFE2006A5CA7 /* SafePass_HackGTTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A1C4D7B227CEFE2006A5CA7 /* SafePass_HackGTTests.swift */; };
 		9A1C4D87227CEFE2006A5CA7 /* SafePass_HackGTUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A1C4D86227CEFE2006A5CA7 /* SafePass_HackGTUITests.swift */; };
+		9A1C4D95227F95E5006A5CA7 /* AccountViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A1C4D94227F95E5006A5CA7 /* AccountViewController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -49,6 +50,7 @@
 		9A1C4D82227CEFE2006A5CA7 /* SafePass_HackGTUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SafePass_HackGTUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		9A1C4D86227CEFE2006A5CA7 /* SafePass_HackGTUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SafePass_HackGTUITests.swift; sourceTree = "<group>"; };
 		9A1C4D88227CEFE2006A5CA7 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		9A1C4D94227F95E5006A5CA7 /* AccountViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountViewController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -102,6 +104,7 @@
 				9A1C4D63227CEFDB006A5CA7 /* AppDelegate.swift */,
 				9A1C4D65227CEFDB006A5CA7 /* ViewController.swift */,
 				9A1C4D67227CEFDB006A5CA7 /* Main.storyboard */,
+				9A1C4D94227F95E5006A5CA7 /* AccountViewController.swift */,
 				9A1C4D6D227CEFE2006A5CA7 /* Assets.xcassets */,
 				9A1C4D6F227CEFE2006A5CA7 /* LaunchScreen.storyboard */,
 				9A1C4D72227CEFE2006A5CA7 /* Info.plist */,
@@ -261,6 +264,7 @@
 			files = (
 				9A1C4D66227CEFDB006A5CA7 /* ViewController.swift in Sources */,
 				9A1C4D64227CEFDB006A5CA7 /* AppDelegate.swift in Sources */,
+				9A1C4D95227F95E5006A5CA7 /* AccountViewController.swift in Sources */,
 				9A1C4D6C227CEFDB006A5CA7 /* SafePass_HackGT.xcdatamodeld in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
