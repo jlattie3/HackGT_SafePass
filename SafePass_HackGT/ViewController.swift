@@ -27,12 +27,7 @@ class ViewController: UIViewController {
         title = "Safe Pass"
         tableView.dataSource = self
         tableView.delegate = self
-        tableView.estimatedRowHeight = 0
-        tableView.estimatedSectionHeaderHeight = 0
-        tableView.estimatedSectionFooterHeight = 0
-//        tableView.register(UITableViewCell.self, forCellReuseIdentifier: "Cell")
         // Do any additional setup after loading the view, typically from a nib.
-        //1
         guard let appDelegate =
             UIApplication.shared.delegate as? AppDelegate else {
                 return
@@ -50,9 +45,7 @@ class ViewController: UIViewController {
         let alert = UIAlertController(title: "New Name",
                                       message: "Add a new name",
                                       preferredStyle: .alert)
-        let saveAction = UIAlertAction(title: "Save",
-                                       style: .default) {
-            [unowned self] action in
+        let saveAction = UIAlertAction(title: "Save", style: .default) { [unowned self] action in
             guard let accountNameField = alert.textFields?[0],
                 let nameToSave = accountNameField.text else {
                     return
@@ -70,7 +63,6 @@ class ViewController: UIViewController {
             self.save(uniqueAccountID: uniqueID, name: nameToSave, id: idToSave, pswd: passToSave)
             self.tableView.reloadData()
         }
-        
         let cancelAction = UIAlertAction(title: "Cancel", style: .cancel)
         alert.addTextField()
         alert.addTextField()
@@ -98,33 +90,24 @@ class ViewController: UIViewController {
         }
     }
     
-    func delete(at indexPath: IndexPath) {
-        guard let appDelegate = UIApplication.shared.delegate as? AppDelegate else {
-            return
-        }
-        print("Established Delegate")
-        let managedContext = appDelegate.persistentContainer.viewContext
-        managedContext.delete(accounts[indexPath.row])
-        do {
-            try managedContext.save()
-        } catch let error as NSError {
-            print("Could not save. \(error), \(error.userInfo)")
-        }
-    }
-    
     func deleteAlert(_ indexPath: IndexPath) {
         let alert = UIAlertController(title: "Warning",
                                       message: "Delete Account Data?",
                                       preferredStyle: .alert)
         let deleteAction = UIAlertAction(title: "Delete", style: .default) { (action:UIAlertAction) in
-            self.tableView.setEditing(true, animated: true)
+            guard let appDelegate = UIApplication.shared.delegate as? AppDelegate else {
+                return
+            }
+            print("Established Delegate")
+            let managedContext = appDelegate.persistentContainer.viewContext
+            managedContext.delete(self.accounts[indexPath.row])
             self.accounts.remove(at: indexPath.row)
-            self.tableView.beginUpdates()
+            do {
+                try managedContext.save()
+            } catch let error as NSError {
+                print("Could not save. \(error), \(error.userInfo)")
+            }
             self.tableView.deleteRows(at: [indexPath], with: UITableView.RowAnimation.automatic)
-            self.tableView.endUpdates()
-            self.tableView.setEditing(false, animated: true)
-//            self.delete(at: indexPath)
-//            self.tableView.reloadData()
         }
         let cancelAction = UIAlertAction(title: "Cancel", style: .cancel)
         alert.addAction(deleteAction)
