@@ -13,11 +13,23 @@ class ViewController: UIViewController {
     
     var accounts: [NSManagedObject] = []
     
+    private var identifierFactory = 0
+    
+    private func getIdentifier() -> Int {
+        identifierFactory += 1
+        return identifierFactory
+    }
+    
     @IBOutlet weak var tableView: UITableView!
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        title = "The List"
+        title = "Safe Pass"
+        tableView.dataSource = self
+        tableView.delegate = self
+        tableView.estimatedRowHeight = 0
+        tableView.estimatedSectionHeaderHeight = 0
+        tableView.estimatedSectionFooterHeight = 0
 //        tableView.register(UITableViewCell.self, forCellReuseIdentifier: "Cell")
         // Do any additional setup after loading the view, typically from a nib.
         //1
@@ -54,7 +66,8 @@ class ViewController: UIViewController {
                     return
             }
             print(nameToSave, idToSave, passToSave)
-            self.save(name: nameToSave, id: idToSave, pswd: passToSave)
+            let uniqueID = self.getIdentifier()
+            self.save(uniqueAccountID: uniqueID, name: nameToSave, id: idToSave, pswd: passToSave)
             self.tableView.reloadData()
         }
         
@@ -67,7 +80,7 @@ class ViewController: UIViewController {
         present(alert, animated: true)
     }
     
-    func save(name: String, id: String, pswd: String) {
+    func save(uniqueAccountID: Int, name: String, id: String, pswd: String) {
         guard let appDelegate = UIApplication.shared.delegate as? AppDelegate else {
                 return
         }
@@ -85,18 +98,49 @@ class ViewController: UIViewController {
         }
     }
     
+    func delete(at indexPath: IndexPath) {
+        guard let appDelegate = UIApplication.shared.delegate as? AppDelegate else {
+            return
+        }
+        print("Established Delegate")
+        let managedContext = appDelegate.persistentContainer.viewContext
+        managedContext.delete(accounts[indexPath.row])
+        do {
+            try managedContext.save()
+        } catch let error as NSError {
+            print("Could not save. \(error), \(error.userInfo)")
+        }
+    }
+    
+    func deleteAlert(_ indexPath: IndexPath) {
+        let alert = UIAlertController(title: "Warning",
+                                      message: "Delete Account Data?",
+                                      preferredStyle: .alert)
+        let deleteAction = UIAlertAction(title: "Delete", style: .default) { (action:UIAlertAction) in
+            self.tableView.setEditing(true, animated: true)
+            self.accounts.remove(at: indexPath.row)
+            self.tableView.beginUpdates()
+            self.tableView.deleteRows(at: [indexPath], with: UITableView.RowAnimation.automatic)
+            self.tableView.endUpdates()
+            self.tableView.setEditing(false, animated: true)
+//            self.delete(at: indexPath)
+//            self.tableView.reloadData()
+        }
+        let cancelAction = UIAlertAction(title: "Cancel", style: .cancel)
+        alert.addAction(deleteAction)
+        alert.addAction(cancelAction)
+        present(alert, animated: true)
+        self.tableView.reloadData()
+    }
+    
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         print("tapped here")
-        if let accountVC = segue.destination as? AccountViewController { // 1
-            // Show existing note
+        if let accountVC = segue.destination as? AccountViewController {
             if let selectedCell = sender as? UITableViewCell,
-                let selectedIndex = tableView.indexPath(for: selectedCell) { // 2
-//                noteVC.note = self.noteDatabase.note(atIndex: selectedIndex.row) // 3
+                let selectedIndex = tableView.indexPath(for: selectedCell) {
                 if let accountLabelText = selectedCell.textLabel?.text {
                     print(accountLabelText)
                     accountVC.account = accounts[selectedIndex.row]
-//                    accountVC.accountLabel?.text = accountLabelText
-//                    print(accountVC.accountLabel?.text ?? "ERROR")
                 }
             }
         }
@@ -104,7 +148,7 @@ class ViewController: UIViewController {
     
 }
 
-extension ViewController: UITableViewDataSource {
+extension ViewController: UITableViewDataSource, UITableViewDelegate {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return accounts.count
     }
@@ -115,6 +159,32 @@ extension ViewController: UITableViewDataSource {
         cell.textLabel?.text = account.value(forKeyPath: "accountName") as? String
         return cell
     }
+    
+    func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
+        
+        let delete = UIContextualAction(style: .destructive, title: "Delete") { (action, view, nil) in
+            print("Delete Cell")
+            print(indexPath.row)
+            self.deleteAlert(indexPath)
+        }
+        delete.backgroundColor = #colorLiteral(red: 1, green: 0.1491314173, blue: 0, alpha: 1)
+
+        let config = UISwipeActionsConfiguration(actions: [delete])
+        config.performsFirstActionWithFullSwipe = false
+        return config
+    }
+    
+    func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
+        return true
+    }
+    
+//    func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
+//        if editingStyle == .delete {
+//            print("Deleted")
+////            self.catNames.remove(at: indexPath.row)
+//            self.tableView.deleteRows(at: [indexPath], with: .automatic)
+//        }
+//    }
     
 //    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
 //        // Segue to the second view controller
