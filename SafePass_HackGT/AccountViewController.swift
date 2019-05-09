@@ -10,22 +10,40 @@ import UIKit
 import CoreData
 import LocalAuthentication
 
-class AccountViewController: UIViewController {
+class AccountViewController: UIViewController, UITextFieldDelegate {
 
     var accounts: [NSManagedObject] = []
     var account: NSManagedObject? = nil
     var hidden = true
     
     @IBOutlet weak var accountLabel: UILabel!
-    @IBOutlet weak var userIDLabel: UILabel!
-    @IBOutlet weak var passwordLabel: UILabel!
     @IBOutlet weak var button: UIButton!
+    @IBOutlet weak var userIDText: UITextField!
+    @IBOutlet weak var pswdText: UITextField!
+    
+    
+    @objc func userIDTarget(textField: UITextField) {
+        print("uID copied")
+        print(userIDText.isTouchInside)
+        UIPasteboard.general.string = userIDText.text
+        userIDText.isUserInteractionEnabled = false
+    }
+    
+    @objc func pswdTarget(textField: UITextField) {
+        print("pswd copied")
+        UIPasteboard.general.string = pswdText.text
+        pswdText.isUserInteractionEnabled = false
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
         hidden = true
 //        print(account?.value(forKey: "accountName"))
         // Do any additional setup after loading the view.
+        userIDText.delegate = self
+        userIDText.addTarget(self, action: #selector(userIDTarget), for: .touchDown)
+        pswdText.delegate = self
+        pswdText.addTarget(self, action: #selector(pswdTarget), for: .touchDown)
         configureUI()
     }
     
@@ -34,13 +52,12 @@ class AccountViewController: UIViewController {
         let userID = account?.value(forKey: "userID")
         let password = account?.value(forKey: "password")
         accountLabel.text = accountName as? String
-        if hidden == true {
-            userIDLabel.text = "-------"
-            passwordLabel.text = "-------"
-        } else {
-            userIDLabel.text = userID as? String
-            passwordLabel.text = password as? String
-        }
+        userIDText.text = userID as? String
+        pswdText.text = password as? String
+        userIDText.isUserInteractionEnabled = false
+        pswdText.isUserInteractionEnabled = false
+        userIDText.isSecureTextEntry = true
+        pswdText.isSecureTextEntry = true
     }
     
     @IBAction func touchButton(_ sender: UIButton) {
@@ -56,15 +73,14 @@ class AccountViewController: UIViewController {
                 DispatchQueue.main.async {
                     if success {
                         if self.hidden == true {
-                            let userID = self.account?.value(forKey: "userID")
-                            let password = self.account?.value(forKey: "password")
-                            self.userIDLabel.text = userID as? String
-                            self.passwordLabel.text = password as? String
+                            self.userIDText.isUserInteractionEnabled = true
+                            self.userIDText.isSecureTextEntry = false
+                            self.pswdText.isSecureTextEntry = false
                             self.hidden = false
                         } else {
+                            self.userIDText.isSecureTextEntry = true
+                            self.pswdText.isSecureTextEntry = true
                             self.hidden = true
-                            self.userIDLabel.text = "-------"
-                            self.passwordLabel.text = "-------"
                         }
                     } else {
                         let ac = UIAlertController(title: "Authentication failed", message: "Try Again", preferredStyle: .alert)
