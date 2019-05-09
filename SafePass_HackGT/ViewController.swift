@@ -42,8 +42,8 @@ class ViewController: UIViewController {
     }
 
     @IBAction func addAccount(_ sender: Any) {
-        let alert = UIAlertController(title: "New Name",
-                                      message: "Add a new name",
+        let alert = UIAlertController(title: "New Account",
+                                      message: "Input account data",
                                       preferredStyle: .alert)
         let saveAction = UIAlertAction(title: "Save", style: .default) { [unowned self] action in
             guard let accountNameField = alert.textFields?[0],

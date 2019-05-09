@@ -14,6 +14,7 @@ class AccountViewController: UIViewController, UITextFieldDelegate {
 
     var accounts: [NSManagedObject] = []
     var account: NSManagedObject? = nil
+    var copyTimer: Timer?
     var hidden = true
     
     @IBOutlet weak var accountLabel: UILabel!
@@ -23,27 +24,40 @@ class AccountViewController: UIViewController, UITextFieldDelegate {
     
     
     @objc func userIDTarget(textField: UITextField) {
-        print("uID copied")
-        print(userIDText.isTouchInside)
+        print("uID copied", userIDText.text)
         UIPasteboard.general.string = userIDText.text
-        userIDText.isUserInteractionEnabled = false
+        let alert = UIAlertController(title: "",
+                                      message: "User ID copied to clipboard!",
+                                      preferredStyle: .alert)
+        present(alert, animated: true)
+        DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(1), execute: {
+            // Put your code which should be executed with a delay here
+            alert.dismiss(animated: true, completion: nil)
+        })
     }
     
     @objc func pswdTarget(textField: UITextField) {
-        print("pswd copied")
+        print("pswd copied", pswdText.text)
         UIPasteboard.general.string = pswdText.text
-        pswdText.isUserInteractionEnabled = false
+        let alert = UIAlertController(title: "",
+                                      message: "Password copied to clipboard!",
+                                      preferredStyle: .alert)
+        present(alert, animated: true)
+        DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(1), execute: {
+            // Put your code which should be executed with a delay here
+            alert.dismiss(animated: true, completion: nil)
+        })
     }
     
     override func viewDidLoad() {
         super.viewDidLoad()
         hidden = true
-//        print(account?.value(forKey: "accountName"))
         // Do any additional setup after loading the view.
         userIDText.delegate = self
         userIDText.addTarget(self, action: #selector(userIDTarget), for: .touchDown)
         pswdText.delegate = self
         pswdText.addTarget(self, action: #selector(pswdTarget), for: .touchDown)
+
         configureUI()
     }
     
@@ -55,9 +69,11 @@ class AccountViewController: UIViewController, UITextFieldDelegate {
         userIDText.text = userID as? String
         pswdText.text = password as? String
         userIDText.isUserInteractionEnabled = false
-        pswdText.isUserInteractionEnabled = false
         userIDText.isSecureTextEntry = true
+        userIDText.tintColor = .clear
+        pswdText.isUserInteractionEnabled = false
         pswdText.isSecureTextEntry = true
+        pswdText.tintColor = .clear
     }
     
     @IBAction func touchButton(_ sender: UIButton) {
@@ -74,10 +90,13 @@ class AccountViewController: UIViewController, UITextFieldDelegate {
                     if success {
                         if self.hidden == true {
                             self.userIDText.isUserInteractionEnabled = true
+                            self.pswdText.isUserInteractionEnabled = true
                             self.userIDText.isSecureTextEntry = false
                             self.pswdText.isSecureTextEntry = false
                             self.hidden = false
                         } else {
+                            self.userIDText.isUserInteractionEnabled = false
+                            self.pswdText.isUserInteractionEnabled = false
                             self.userIDText.isSecureTextEntry = true
                             self.pswdText.isSecureTextEntry = true
                             self.hidden = true
@@ -96,6 +115,10 @@ class AccountViewController: UIViewController, UITextFieldDelegate {
         }
     }
     
+    func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
+        return false
+    }
+    
     /*
     // MARK: - Navigation
 
@@ -106,3 +129,5 @@ class AccountViewController: UIViewController, UITextFieldDelegate {
     }
     */
 }
+
+
